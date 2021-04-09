@@ -23,6 +23,8 @@ db.sequelize = sequelize;
 
 //models
 db.user = sequelize.import("./models/user");
+db.goals = sequelize.import("./models/goals");
+db.notes = sequelize.import("./models/notes");
 
 
 //sync tables in order to make sure associations do not fail

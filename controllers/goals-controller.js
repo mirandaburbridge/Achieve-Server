@@ -2,21 +2,21 @@
 const router = require("express").Router();
 
 //database
-const Goal = require("../db").goals;
-const User = require("../db").user;
+const Goal = require("../db").import('../models/goals');
+const User = require("../db").import('../models/user');
 
 
 ////////////////////////////////////////////////
 // CREATE GOAL
 ////////////////////////////////////////////////
-router.post("/goals", (req, res) => {
-    const goalEntry = {
-        dueDate: req.body.dueDate,
-        description: req.body.description,
+router.post("/create", (req, res) => {
+    const goal = {
+        dueDate: req.body.goal.dueDate,
+        description: req.body.goal.description,
         userId: req.user.id
     };
 
-    Goal.create(goalEntry)
+    Goal.create(goal)
         .then((goal) => res.status(200).json(goal))
         .catch((err) => res.status(500).json({ error: err }));
 });
@@ -24,7 +24,7 @@ router.post("/goals", (req, res) => {
 ////////////////////////////////////////////////
 // GET GOALS (PAGINATED)
 ////////////////////////////////////////////////
-router.get("/goals", async (req, res) => {
+router.get("/", async (req, res) => {
     //setup pagination constants
     const limit = req.params.limit;
     const offset = (req.params.page - 1) * limit;

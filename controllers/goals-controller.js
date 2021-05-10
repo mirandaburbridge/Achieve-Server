@@ -54,7 +54,7 @@ router.get("/", async (req, res) => {
 ////////////////////////////////////////////////
 // UPDATE GOAL
 ////////////////////////////////////////////////
-router.put("/goalID", async (req, res) => {
+router.put("/:goalID", async (req, res) => {
 
     const goalEntry = {
         dueDate: req.body.dueDate,

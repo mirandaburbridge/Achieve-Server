@@ -2,16 +2,16 @@
 const router = require("express").Router();
 
 //database
-const Note = require("../db").notes;
-const User = require("../db").user;
+const Note = require("../db").import('../models/notes');
+const User = require("../db").import('../models/user');
 
 
 ////////////////////////////////////////////////
 // CREATE NOTE
 ////////////////////////////////////////////////
-router.post("/notes", (req, res) => {
+router.post("/create", (req, res) => {
     const noteEntry = {
-        description: req.body.description,
+        description: req.body.note.description,
         userId: req.user.id
     };
 
@@ -23,7 +23,7 @@ router.post("/notes", (req, res) => {
 ////////////////////////////////////////////////
 // GET NOTES (PAGINATED)
 ////////////////////////////////////////////////
-router.get("/notes", async (req, res) => {
+router.get("/", async (req, res) => {
     //setup pagination constants
     const limit = req.params.limit;
     const offset = (req.params.page - 1) * limit;

@@ -22,28 +22,17 @@ router.post("/create", (req, res) => {
 });
 
 ////////////////////////////////////////////////
-// GET GOALS (PAGINATED)
+// GET GOALS
 ////////////////////////////////////////////////
 router.get("/", async (req, res) => {
-    //setup pagination constants
-    const limit = req.params.limit;
-    const offset = (req.params.page - 1) * limit;
 
-    //get goals from pagination and createdAt Descending order
-    //most recent goals will be sent first
-    const query = {
-        limit: limit,
-        offset: offset,
-        order: [["createdAt", "DESC"]],
-    };
+    const userId = req.user.id
 
-    //get total number of goals
-    const count = await Goal.count();
-
-    //get goals and return them with count
-    Goal.findAll(query)
+    Goal.findAll({
+        where: { userId: userId }
+    })
         .then((goals) => {
-            const restRes = { goals: goals, total: count };
+            const restRes = { goals: goals };
             res.status(200).json(restRes);
         })
         .then((err) => res.status(500).json(err))
@@ -56,7 +45,7 @@ router.get("/", async (req, res) => {
 ////////////////////////////////////////////////
 router.put("/:goalID", async (req, res) => {
 
-    const goalEntry = {
+    const goal = {
         dueDate: req.body.dueDate,
         description: req.body.description,
         userId: req.user.id
@@ -65,7 +54,7 @@ router.put("/:goalID", async (req, res) => {
     const query = { where: { id: req.params.goalID } };
 
     //update Post
-    Goal.update(goalEntry, query)
+    Goal.update(goal, query)
         .then((goal) => res.status(200).json(goal))
         .catch((err) => res.status(500).json({ error: err }));
 });

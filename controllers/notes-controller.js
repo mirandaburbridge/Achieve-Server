@@ -10,12 +10,12 @@ const User = require("../db").import('../models/user');
 // CREATE NOTE
 ////////////////////////////////////////////////
 router.post("/create", (req, res) => {
-    const noteEntry = {
+    const note = {
         description: req.body.note.description,
         userId: req.user.id
     };
 
-    Note.create(noteEntry)
+    Note.create(note)
         .then((note) => res.status(200).json(note))
         .catch((err) => res.status(500).json({ error: err }));
 });
@@ -24,25 +24,29 @@ router.post("/create", (req, res) => {
 // GET NOTES (PAGINATED)
 ////////////////////////////////////////////////
 router.get("/", async (req, res) => {
-    //setup pagination constants
-    const limit = req.params.limit;
-    const offset = (req.params.page - 1) * limit;
+    // //setup pagination constants
+    // const limit = req.params.limit;
+    // const offset = (req.params.page - 1) * limit;
+    const userId = req.user.id
 
-    //get notes from pagination and createdAt Descending order
-    //most recent notes will be sent first
-    const query = {
-        limit: limit,
-        offset: offset,
-        order: [["createdAt", "DESC"]],
-    };
+    // //get notes from pagination and createdAt Descending order
+    // //most recent notes will be sent first
+    // const query = {
+    //     limit: limit,
+    //     offset: offset,
+    //     order: [["createdAt", "DESC"]],
+    // };
 
-    //get total number of notes
-    const count = await Note.count();
+    // //get total number of notes
+    // const count = await Note.count();
+
 
     //get notes and return them with count
-    Note.findAll(query)
+    Note.findAll({
+        where: { userId: userId }
+    })
         .then((notes) => {
-            const restRes = { notes: notes, total: count };
+            const restRes = { notes: notes };
             res.status(200).json(restRes);
         })
         .then((err) => res.status(500).json(err))

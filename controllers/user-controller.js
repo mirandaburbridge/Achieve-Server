@@ -76,30 +76,51 @@ router.post("/login", function (req, res) {
 });
 
 //////////////////////////////////////////////////////////////////////
-// GET USER BY ID
+// GET USERS
 //////////////////////////////////////////////////////////////////////
 //We use validateSession here to protect the path of unknown users from
 //getting our users data
-router.get("/byId/:id", validateSession, (req, res) => {
-    User.findOne({ where: { id: req.params.id } })
-        .then((user) => {
-            res.status(200).json({ username: user.username });
-        })
-        .catch((err) => res.status(500).json({ err: err }));
+router.get("/display", validateSession, (req, res) => {
+    if (req.user.isAdmin == true) {
+        User.findAll()
+            .then((user) => {
+                res.status(200).json({ user });
+            })
+            .catch((err) => res.status(500).json({ err: err }));
+    } else {
+        res.status(502).json({ err: 'not authorized' })
+    }
 });
 
-//////////////////////////////////////////////////////////////////////
-// GET LOGGED IN USER BY TOKEN
-//////////////////////////////////////////////////////////////////////
-//We use validateSession here to protect the path of unknown users from
-//getting our users data
-//This endpoint gets logged in user data from provided session Token
-router.get("/self", validateSession, (req, res) => {
-    User.findOne({ where: { id: req.user.id } })
-        .then((user) => {
-            res.status(200).json({ username: user.username });
-        })
-        .catch((err) => res.status(500).json({ err: err }));
+//UPDATE USER
+router.put("/update/:userId", validateSession, (req, res) => {
+    if (req.user.isAdmin == true) {
+        const user = {
+            username: req.body.user.username,
+            isAdmin: req.body.user.isAdmin
+        }
+        const query = { where: { id: req.params.userId } };
+        User.update(user, query)
+            .then((user) => {
+                res.status(200).json({ username: user.username });
+            })
+            .catch((err) => res.status(500).json({ err: err }));
+    } else {
+        res.status(502).json({ err: 'not authorized' })
+    }
+});
+
+//DELETE USER
+router.delete("/delete/:userId", validateSession, async (req, res) => {
+    if (req.user.isAdmin == true) {
+        const query = { where: { id: req.params.userId } };
+
+        User.destroy(query)
+            .then(() => res.status(200).json({ message: "User Removed" }))
+            .catch((err) => res.status(500).json({ error: err }));
+    } else {
+        res.status(502).json({ err: 'not authorized' })
+    }
 });
 
 module.exports = router;

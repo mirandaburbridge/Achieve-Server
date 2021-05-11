@@ -1,5 +1,9 @@
 module.exports = (sequelize, DataTypes) => {
     const Items = sequelize.define("item", {
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         goalId: {
             type: DataTypes.INTEGER,
             allowNull: false
